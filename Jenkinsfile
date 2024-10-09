@@ -17,10 +17,16 @@ pipeline {
                 checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/deployment']], extensions: [], userRemoteConfigs: [[credentialsId: 'github_login', url: 'https://github.com/custyblak/spring-petclinic.git']])
             }
         }
-        stage('Build && Test') {
+        stage('Build') {
             steps {
-                echo 'Building && Testing..'
-                sh 'mvn build' && 'mvn test'
+                echo 'Building'
+                sh 'mvn compile'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+                sh 'mvn test'
             }
         }
         stage('Checkstyle Analysis') {
@@ -33,14 +39,13 @@ pipeline {
                 SCANNER_HOME = tool "${SONARSCANNER}"
             }
             steps {
-                withSonarQubeEnv(credentialsId: 'sonartoken', installationName: 'sonarserver') {
+                withSonarQubeEnv("${SONARSERVER}") {
                     sh '''$SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.projectName=petclinic \
                     -Dsonar.sources=src/ \
                     -Dsonar.java.binaries=target/classes/ \
                     -Dsonar.exclusions=src/test/java/****/*.java \
-                    -Dsonar.java.libraries=/var/lib/jenkins/.m2/**/*.jar \
-                    -Dsonar.projectVersion=${BUILD_NUMBER}-${GIT_COMMIT_SHORT}'''
+                    -Dsonar.java.libraries=/var/lib/jenkins/.m2/**/*.jar \ '''
                 }
             }
         }
