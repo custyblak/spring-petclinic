@@ -8,7 +8,7 @@ pipeline {
     environment {
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
-
+        SCANNER_HOME = tool("${SONARSCANNER}")
     }
 
     stages {
@@ -35,9 +35,6 @@ pipeline {
             }
         }
         stage('SonarQube analysis') {
-            environment {
-                SCANNER_HOME = tool "${SONARSCANNER}"
-            }
             steps {
                 withSonarQubeEnv("${SONARSERVER}") {
                     sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=sonartoken \
@@ -54,7 +51,7 @@ pipeline {
         stage('SQuality Gate') {
             steps {
                 timeout(time: 1, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
