@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven "maven_3.9.9"
-        jdk "openjdk"
+        jdk "OpenJdk11"
     }
 
     environment {
@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github_login', url: 'https://github.com/custyblak/spring-petclinic.git']])
+                checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/deployment']], extensions: [], userRemoteConfigs: [[credentialsId: 'github_login', url: 'https://github.com/custyblak/spring-petclinic.git']])
             }
         }
         stage('Build && Test') {
