@@ -40,12 +40,14 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv("${SONARSERVER}") {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=sonartoken \
                     -Dsonar.projectName=petclinic \
+                    -Dsonar.projectVersion=1.0 \
                     -Dsonar.sources=src/ \
-                    -Dsonar.java.binaries=target/classes/ \
-                    -Dsonar.exclusions=src/test/java/****/*.java \
-                    -Dsonar.java.libraries=/var/lib/jenkins/.m2/**/*.jar '''
+                    -Dsonar.java.binaries=target/test-classes/org/springframework/samples/petclinic \
+                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                    -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
                 }
             }
         }
